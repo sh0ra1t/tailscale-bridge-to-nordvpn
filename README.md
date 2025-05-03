@@ -33,25 +33,20 @@ The Tailscale instance will advertise as an exit node, and use the NordVPN conta
     * Login into your Nordvpn account: 
     nordvpn login --token <token>
     
-    Connect to nordvpn with command: nordvpn connect (don't forget to login with nordvpn login --legacy).
-Fetch (your) IP address
+    * After successful connection run:
+    ifconfig nordlynx
 
-After successful connection run
+    * Fetch your private key
+    sudo wg show nordlynx private-key
 
-ifconfig nordlynx
-Fetch your private key
+    * Output of this is your `NORDVPN_AUTHKEY` (example key):
+    e.g.: XasnoanoiasnXXXXXXXXXXXXXXXXXX=
 
-Run
-
-sudo wg show nordlynx private-key
-
-Output of this command should be something like this:
-
-CKMAE9LARlt2eZHgGnNaSUYiKllKJN7f3hed/bWm5E8=
-
-2. Obtain your `TS_AUTHKEY`
+3. Obtain your `TS_AUTHKEY`
     * Create a API key for your TAILSCALE account:
-    * Info: https://tailscale.com/kb/1085/auth-keys#generate-an-auth-key
+    * When creating the key on Tailscale, add the device tick the options "Use as exit node" and "Reusable" so you can use it again if needed.
+    * More info: https://tailscale.com/kb/1085/auth-keys#generate-an-auth-key
+
 
 3. Edit '.env' file and add your credentials:
     * `NORDVPN_AUTHKEY`: Your NordVPN wireguard login token.
@@ -62,7 +57,8 @@ CKMAE9LARlt2eZHgGnNaSUYiKllKJN7f3hed/bWm5E8=
 4. Run `docker compose up`.
 
 5. Authorize the exit node on Tailscale.
-    * Login into tailscale and manually authorize the exit node on Tailscale.
-    * Info: https://tailscale.com/kb/1103/exit-nodes#allow-the-exit-node-from-the-admin-console 
+    * Manually authorize the exit node on Tailscale.
+    * Select the machine, click on (...), "Edit Route Settings" and apply "Use as exit node".
+    * More info: https://tailscale.com/kb/1103/exit-nodes#allow-the-exit-node-from-the-admin-console 
 
 6. Connect one external device to your tailscale and set the exit node with the device `TS_HOSTNAME`. You will obtain the NORDVPN ip.
