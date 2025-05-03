@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  nordvpn:
+    image: qmcgaw/gluetun
+    container_name: nordvpn
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun
+    environment:
+      - VPN_TYPE=wireguard
+      - VPN_SERVICE_PROVIDER=nordvpn
+      - WIREGUARD_PRIVATE_KEY=${NORDVPN_AUTHKEY}
+      - SERVER_COUNTRIES=Portugal
+      - FIREWALL=off
+    sysctls:
+      - net.ipv4.ip_forward=1
+      - net.ipv6.conf.all.disable_ipv6=1
+      - net.ipv6.conf.default.disable_ipv6=1
+    privileged: true
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "ipinfo.io/ip"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  tailscale:
+    image: tailscale/tailscale
+    container_name: nordvpn-node
+    depends_on:
+      nordvpn:
+        condition: service_healthy
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+      - SYS_MODULE
+    sysctls:
+      - net.ipv6.conf.all.disable_ipv6=1
+      - net.ipv6.conf.default.disable_ipv6=1
+    volumes:
+      - /var/lib:/var/lib
+      - /dev/net/tun:/dev/net/tun
+    environment:
+      - TS_AUTHKEY=${TS_AUTHKEY}
+    command: >
+      sh -c "
+        tailscaled --tun=userspace-networking &
+        sleep 5 &&
+        tailscale up --authkey=${TS_AUTHKEY} --hostname=${TS_HOSTNAME} --advertise-exit-node --accept-routes --accept-dns=false
+        sleep infinity
+      "
+    network_mode: service:nordvpn
