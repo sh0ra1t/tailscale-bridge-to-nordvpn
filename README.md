@@ -10,6 +10,7 @@ The Tailscale instance will advertise as an exit node, and use the NordVPN conta
 * Linux Server (e.g. ubuntu 24.04).
 
 * Aditional packages:
+    * wireguard
     * docker-ce
     * docker-ce-cli 
     * containerd.io 
@@ -23,25 +24,16 @@ The Tailscale instance will advertise as an exit node, and use the NordVPN conta
 * Connect to any NordVPN region.
 * Tailscale container is only launched after healthcheck of Nordvpn container.
 * Define your tokens on .env file.
+* Obtain your Nordvpn wireguard private key
 
 ## Usage
-1. Obtain your Nordvpn API Key
+1. Obtain your Nordvpn Login API Token:
     * Create a API key to allow you access through command line into your NORDVPN account:
     * Info: https://support.nordvpn.com/hc/en-us/articles/20286980309265-How-to-use-a-token-with-NordVPN-on-Linux
 
-2. Obtain your `NORDVPN_AUTHKEY` (token for the exit node)
-    * Login into your Nordvpn account: 
-    nordvpn login --token <token>
+2. Obtain your `NORDVPN_AUTHKEY` (wireguard private key):
+    * Execute nordvpn_token.sh 
     
-    * After successful connection run:
-    ifconfig nordlynx
-
-    * Fetch your private key
-    sudo wg show nordlynx private-key
-
-    * Output of this is your `NORDVPN_AUTHKEY` (example key):
-    e.g.: XasnoanoiasnXXXXXXXXXXXXXXXXXX=
-
 3. Obtain your `TS_AUTHKEY`
     * Create a API key for your TAILSCALE account:
     * When creating the key on Tailscale, add the device tick the options "Use as exit node" and "Reusable" so you can use it again if needed.
@@ -54,7 +46,7 @@ The Tailscale instance will advertise as an exit node, and use the NordVPN conta
     * `TS_AUTHKEY`: Your Tailscale login token.
     * E.g.:TS_AUTHKEY=tskey-auth-XXXXXXXXXX1CNTRL-YYYYYYYYYYYYYYYYYYdsfs
 
-4. Run `docker compose up`.
+4. Run `docker-compose up`.
 
 5. Authorize the exit node on Tailscale.
     * Manually authorize the exit node on Tailscale.
