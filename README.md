@@ -1,5 +1,4 @@
 # tailscale-bridge-to-nordvpn
-Create a Tailscale exit node in Docker with a NordVPN exit node using Wireguard protocol (fastest one).
 
 This project will launch two docker containers. 
 - One for Tailscale, and another for NordVPN. 
